@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   try {
     response = await fetch(`${BACKEND_URL}/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Host: "localhost" },
       body: JSON.stringify(body),
     });
   } catch {

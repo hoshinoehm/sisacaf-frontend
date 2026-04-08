@@ -32,6 +32,7 @@ async function proxyRequest(
 
   const forwardHeaders: Record<string, string> = {
     Authorization: `Bearer ${token}`,
+    Host: "localhost",
   };
 
   const contentType = request.headers.get("content-type");
