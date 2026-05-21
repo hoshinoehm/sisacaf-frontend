@@ -50,7 +50,7 @@ export default function CadastroMilitar() {
     subUnidadeId: "",
     situacao: "PRONTO",
     postoGraduacao: "SOLDADO",
-    quadro: "QOPM",
+    quadro: "QOEM",
     numeroBarra: "",
     dataInclusao: "",
     dataNascimento: "",
@@ -61,6 +61,8 @@ export default function CadastroMilitar() {
     logradouro: "",
     numeroCasa: "",
     bairro: "",
+    comportamentoEnum: "",
+    situacaoJuridica: "",
   });
 
   const [estados, setEstados] = useState<Estado[]>([]);
@@ -159,7 +161,7 @@ export default function CadastroMilitar() {
           [
             "nomeCompleto", "nomeGuerra", "matricula", "cpf", "rgMilitar", "celular",
             "idServidor", "numeroBarra", "dataInclusao", "dataNascimento", "email",
-            "logradouro", "numeroCasa", "bairro"
+            "logradouro", "numeroCasa", "bairro", "situacaoJuridica"
           ] as (keyof typeof formData)[]
         ).map((field) => (
 
@@ -208,6 +210,23 @@ export default function CadastroMilitar() {
         </div>
 
         <div className="space-y-1">
+          <Label htmlFor="comportamentoEnum">Comportamento</Label>
+          <select
+            id="comportamentoEnum"
+            className="w-full border rounded p-2"
+            value={formData.comportamentoEnum}
+            onChange={handleChange}
+          >
+            <option value="">Selecione</option>
+            <option value="EXCEPCIONAL">Excepcional</option>
+            <option value="OTIMO">Ótimo</option>
+            <option value="BOM">Bom</option>
+            <option value="INSUFICIENTE">Insuficiente</option>
+            <option value="MAU">Mau</option>
+          </select>
+        </div>
+
+        <div className="space-y-1">
           <Label htmlFor="sexo">Sexo</Label>
           <select
             id="sexo"
@@ -246,19 +265,20 @@ export default function CadastroMilitar() {
             required
           >
             <option value="">Selecione</option>
-            <option value="SOLDADO">Soldado</option>
-            <option value="CABO">Cabo</option>
-            <option value="TERCEIRO_SARGENTO">3° Sargento</option>
-            <option value="SEGUNDO_SARGENTO">2° Sargento</option>
-            <option value="PRIMEIRO_SARGENTO">1° Sargento</option>
-            <option value="SUBTENENTE">Subtenente</option>
-            <option value="ASPIRANTE">Aspirante</option>
-            <option value="SEGUNDO_TENENTE">2° Tenente</option>
-            <option value="PRIMEIRO_TENENTE">1° Tenente</option>
-            <option value="CAPITAO">Capitão</option>
-            <option value="MAJOR">Major</option>
-            <option value="TENENTE_CORONEL">Tenente-Coronel</option>
-            <option value="CORONEL">Coronel</option>
+            <option value="CORONEL">CEL</option>
+            <option value="TENENTE_CORONEL">TC</option>
+            <option value="MAJOR">MAJ</option>
+            <option value="CAPITAO">CAP</option>
+            <option value="PRIMEIRO_TENENTE">1º TEN</option>
+            <option value="SEGUNDO_TENENTE">2º TEN</option>
+            <option value="ASPIRANTE">ASP OF</option>
+            <option value="CAD_PM">CAD PM</option>
+            <option value="SUBTENENTE">SUBTEN</option>
+            <option value="PRIMEIRO_SARGENTO">1º SGT</option>
+            <option value="SEGUNDO_SARGENTO">2º SGT</option>
+            <option value="TERCEIRO_SARGENTO">3º SGT</option>
+            <option value="CABO">CB</option>
+            <option value="SOLDADO">SD</option>
           </select>
         </div>
 
@@ -270,9 +290,9 @@ export default function CadastroMilitar() {
             value={formData.quadro}
             onChange={handleChange}
           >
-            <option value="QPPM">QPPM</option>
-            <option value="QOPM">QOPM</option>
-            <option value="QOAPM">QOAPM</option>
+            <option value="QP">QP</option>
+            <option value="QOEM">QOEM</option>
+            <option value="QOE">QOE</option>
           </select>
         </div>
 

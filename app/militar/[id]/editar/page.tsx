@@ -62,6 +62,9 @@ interface MilitarForm {
   postoGraduacaoEnum?: string;
   quadro: string;
   serve31bpm: boolean;
+  comportamento?: string;
+  comportamentoEnum: string;
+  situacaoJuridica: string;
 }
 
 export default function EditarMilitar() {
@@ -92,11 +95,12 @@ export default function EditarMilitar() {
     postoGraduacao: "",
     quadro: "",
     serve31bpm: false,
+    comportamentoEnum: "",
+    situacaoJuridica: "",
   });
 
   const [funcoes, setFuncoes] = useState<Funcao[]>([]);
   const [subUnidades, setSubUnidades] = useState<SubUnidade[]>([]);
-  const [postosGraduacao, setPostosGraduacao] = useState<{ label: string; value: string }[]>([]);
   const [estados, setEstados] = useState<Estado[]>([]);
   const [cidades, setCidades] = useState<Cidade[]>([]);
   const [todasCidades, setTodasCidades] = useState<Cidade[]>([]);
@@ -107,18 +111,16 @@ export default function EditarMilitar() {
 
     const fetchDataInicial = async () => {
       try {
-        const [militarData, funcoesData, subunidadesData, postosData, estadosData, cidadesData] = await Promise.all([
+        const [militarData, funcoesData, subunidadesData, estadosData, cidadesData] = await Promise.all([
           fetchData<MilitarForm>(`/militares/${id}`),
           fetchData<Funcao[]>("/funcoes"),
           fetchData<SubUnidade[]>("/subunidades"),
-          fetchData<{ value: string; label: string }[]>("/militares/posto-graduacoes"),
           fetchData<Estado[]>("/estados"),
           fetchData<Cidade[]>("/cidades"),
         ]);
 
         setFuncoes(funcoesData);
         setSubUnidades(subunidadesData);
-        setPostosGraduacao(postosData);
         setEstados(estadosData);
         setTodasCidades(cidadesData);
 
@@ -214,6 +216,7 @@ export default function EditarMilitar() {
     "logradouro",
     "numeroCasa",
     "bairro",
+    "situacaoJuridica",
   ];
 
   return (
@@ -259,9 +262,20 @@ export default function EditarMilitar() {
           <Label htmlFor="postoGraduacao">Posto/Graduação</Label>
           <select id="postoGraduacao" className="w-full border rounded p-2" value={formData.postoGraduacao} onChange={handleChange}>
             <option value="">Selecione</option>
-            {postosGraduacao.map(({ value, label }) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
+            <option value="CORONEL">CEL</option>
+            <option value="TENENTE_CORONEL">TC</option>
+            <option value="MAJOR">MAJ</option>
+            <option value="CAPITAO">CAP</option>
+            <option value="PRIMEIRO_TENENTE">1º TEN</option>
+            <option value="SEGUNDO_TENENTE">2º TEN</option>
+            <option value="ASPIRANTE">ASP OF</option>
+            <option value="CAD_PM">CAD PM</option>
+            <option value="SUBTENENTE">SUBTEN</option>
+            <option value="PRIMEIRO_SARGENTO">1º SGT</option>
+            <option value="SEGUNDO_SARGENTO">2º SGT</option>
+            <option value="TERCEIRO_SARGENTO">3º SGT</option>
+            <option value="CABO">CB</option>
+            <option value="SOLDADO">SD</option>
           </select>
         </div>
 
@@ -282,6 +296,18 @@ export default function EditarMilitar() {
             {subUnidades.map((sub) => (
               <option key={sub.id} value={sub.id}>{sub.nome}</option>
             ))}
+          </select>
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="comportamentoEnum">Comportamento</Label>
+          <select id="comportamentoEnum" className="w-full border rounded p-2" value={formData.comportamentoEnum} onChange={handleChange}>
+            <option value="">Selecione</option>
+            <option value="EXCEPCIONAL">Excepcional</option>
+            <option value="OTIMO">Ótimo</option>
+            <option value="BOM">Bom</option>
+            <option value="INSUFICIENTE">Insuficiente</option>
+            <option value="MAU">Mau</option>
           </select>
         </div>
 
@@ -309,9 +335,9 @@ export default function EditarMilitar() {
           <Label htmlFor="quadro">Quadro</Label>
           <select id="quadro" className="w-full border rounded p-2" value={formData.quadro} onChange={handleChange}>
             <option value="">Selecione</option>
-            <option value="QPPM">QPPM</option>
-            <option value="QOPM">QOPM</option>
-            <option value="QOAPM">QOAPM</option>
+            <option value="QP">QP</option>
+            <option value="QOEM">QOEM</option>
+            <option value="QOE">QOE</option>
           </select>
         </div>
 
