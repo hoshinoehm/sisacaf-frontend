@@ -36,6 +36,10 @@ import { fetchData } from "@/lib/api";
 const columnHelper = createColumnHelper();
 
 const columns = [
+  columnHelper.accessor("nomeCompleto", {
+    header: "Nome Completo",
+    enableHiding: true,
+  }),
   columnHelper.accessor("nomeGuerra", {
     header: ({ column }) => (
       <button onClick={column.getToggleSortingHandler()} className="flex items-center gap-1">
@@ -107,7 +111,11 @@ export default function ListarMilitaresTable() {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
     state: { sorting, globalFilter },
+    initialState: {
+      columnVisibility: { nomeCompleto: false },
+    },
   });
 
   return (
