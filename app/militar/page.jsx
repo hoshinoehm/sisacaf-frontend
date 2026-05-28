@@ -96,11 +96,13 @@ export default function ListarMilitaresTable() {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData("/militares")
       .then(setData)
-      .catch((err) => console.error("Erro ao buscar militares:", err));
+      .catch((err) => console.error("Erro ao buscar militares:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   const table = useReactTable({
@@ -145,7 +147,17 @@ export default function ListarMilitaresTable() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {loading ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <TableRow key={i}>
+                  {Array.from({ length: columns.length }).map((_, j) => (
+                    <TableCell key={j}>
+                      <div className="h-4 bg-muted animate-pulse rounded" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (

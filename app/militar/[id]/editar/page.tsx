@@ -103,28 +103,24 @@ export default function EditarMilitar() {
   const [subUnidades, setSubUnidades] = useState<SubUnidade[]>([]);
   const [estados, setEstados] = useState<Estado[]>([]);
   const [cidades, setCidades] = useState<Cidade[]>([]);
-  const [todasCidades, setTodasCidades] = useState<Cidade[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingCidades, setLoadingCidades] = useState(false);
 
   useEffect(() => {
     if (!id) return;
 
     const fetchDataInicial = async () => {
       try {
-        const [militarData, funcoesData, subunidadesData, estadosData, cidadesData] = await Promise.all([
+        const [militarData, funcoesData, subunidadesData, estadosData] = await Promise.all([
           fetchData<MilitarForm>(`/militares/${id}`),
           fetchData<Funcao[]>("/funcoes"),
           fetchData<SubUnidade[]>("/subunidades"),
           fetchData<Estado[]>("/estados"),
-          fetchData<Cidade[]>("/cidades"),
         ]);
 
         setFuncoes(funcoesData);
         setSubUnidades(subunidadesData);
         setEstados(estadosData);
-        setTodasCidades(cidadesData);
-
-        const cidadesFiltradas = cidadesData.filter(c => c.estado.id === militarData.estadoId);
 
         setFormData({
           ...militarData,
@@ -134,7 +130,10 @@ export default function EditarMilitar() {
           serve31bpm: !!militarData.serve31bpm,
         });
 
-        setCidades(cidadesFiltradas);
+        if (militarData.estadoId) {
+          const cidadesData = await fetchData<Cidade[]>(`/cidades?estadoId=${militarData.estadoId}`);
+          setCidades(cidadesData);
+        }
       } catch (error) {
         console.error(error);
         toast.error("Erro ao carregar dados.");
@@ -145,23 +144,26 @@ export default function EditarMilitar() {
     fetchDataInicial();
   }, [id, router]);
 
-  useEffect(() => {
-    if (!formData.estadoId || !todasCidades.length) return;
-    const cidadesFiltradas = todasCidades.filter(c => c.estado.id === formData.estadoId);
-    setCidades(cidadesFiltradas);
-  }, [formData.estadoId, todasCidades]);
-
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value, type } = e.target;
     const newValue = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
     setFormData(prev => ({ ...prev, [id]: newValue }));
   };
 
-  const handleEstadoChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleEstadoChange = async (e: ChangeEvent<HTMLSelectElement>) => {
     const novoEstadoId = Number(e.target.value);
-    const cidadesFiltradas = todasCidades.filter(c => c.estado.id === novoEstadoId);
-    setCidades(cidadesFiltradas);
     setFormData(prev => ({ ...prev, estadoId: novoEstadoId, cidadeId: 0 }));
+    if (novoEstadoId) {
+      setLoadingCidades(true);
+      try {
+        const cidadesData = await fetchData<Cidade[]>(`/cidades?estadoId=${novoEstadoId}`);
+        setCidades(cidadesData);
+      } finally {
+        setLoadingCidades(false);
+      }
+    } else {
+      setCidades([]);
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -250,8 +252,8 @@ export default function EditarMilitar() {
 
         <div className="space-y-1">
           <Label htmlFor="cidadeId">Cidade</Label>
-          <select id="cidadeId" className="w-full border rounded p-2" value={formData.cidadeId} onChange={handleChange}>
-            <option value="">Selecione</option>
+          <select id="cidadeId" className="w-full border rounded p-2" value={formData.cidadeId} onChange={handleChange} disabled={loadingCidades}>
+            <option value="">{loadingCidades ? "Carregando..." : "Selecione"}</option>
             {cidades.map((cidade) => (
               <option key={cidade.id} value={cidade.id}>{cidade.nome}</option>
             ))}
